@@ -1,0 +1,2 @@
+# SimpleMicrosoftTranslator
+Microsoft Translatorを使用したC#コンソールアプリケーション
