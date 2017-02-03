@@ -9,7 +9,7 @@ namespace SimpleTranslator
     class Program
     {
         // 翻訳前言語コード
-        private static string fromLangCode = "ja";
+        //private static string fromLangCode = "ja";
         // 翻訳語言語コード
         private static string toLangCode = "en";
         // 言語ドメイン
@@ -20,7 +20,10 @@ namespace SimpleTranslator
 
             CallTranslator callTranslator = new CallTranslator();
             string detectedLangCode = callTranslator.DetectMethod(textToTransform);
+
+            // 翻訳言語を明示していする場合は、fromLangCodeを使用
             string translatedText = callTranslator.TranslateMethod(textToTransform, detectedLangCode, toLangCode, domain);
+
             Console.WriteLine("翻訳元言語：" + detectedLangCode);
             Console.WriteLine("翻訳元文：" + textToTransform);
             Console.WriteLine("翻訳文：" + translatedText);
@@ -39,6 +42,9 @@ namespace SimpleTranslator
         // TranslateサービスのURL
         private static readonly Uri ServiceUrl = new Uri("http://api.microsofttranslator.com/v2/Http.svc/");
 
+        /*
+          翻訳の実施
+        */
         public string TranslateMethod(string textToTransform, string fromLangCode, string toLangCode, string domain)
         {
             // トークンの取得
@@ -46,11 +52,10 @@ namespace SimpleTranslator
             var token = string.Empty;
             token = authTokenSource.GetAccessToken();
 
-            // トランスレーターサービスの呼出
+            // 翻訳サービスの呼出
             string uri = ServiceUrl + "Translate?text=" + System.Web.HttpUtility.UrlEncode(textToTransform) 
                 + "&appid=" + token + "&from=" + fromLangCode + "&to=" + toLangCode + "&category=" + domain;
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
-            //httpWebRequest.Headers.Add("Authorization", "Bearer " + token);
             WebResponse response = null;
             string translatedText = null;
 
@@ -72,6 +77,9 @@ namespace SimpleTranslator
             return translatedText;
         }
 
+        /*
+          言語の自動識別
+        */
         public string DetectMethod(string textToTransform)
         {
             // トークンの取得
@@ -82,7 +90,6 @@ namespace SimpleTranslator
             // Detectサービスの呼出
             string uri = ServiceUrl + "Detect?text=" + System.Web.HttpUtility.UrlEncode(textToTransform) + "&appid=" + token;
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
-            //httpWebRequest.Headers.Add("Authorization", "Bearer " + token);
             WebResponse response = null;
             string langCode = null;
 
