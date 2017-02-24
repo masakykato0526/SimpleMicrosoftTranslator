@@ -33,7 +33,7 @@ namespace SimpleTranslator
     
 
     /*
-      Microsoft Translatorの呼出
+      Cognitive Service Translator APIの翻訳サービスの呼出
     */
     public class CallTranslator
     {
@@ -44,6 +44,10 @@ namespace SimpleTranslator
 
         /*
           翻訳の実施
+          <param name="textToTransform">翻訳対象文書</param>
+          <param name="fromLangCode">翻訳元言語</param>
+          <param name="toLangCode">翻訳先言語</param>
+          <param name="domain">翻訳ドメイン</param>
         */
         public string TranslateMethod(string textToTransform, string fromLangCode, string toLangCode, string domain)
         {
@@ -79,6 +83,7 @@ namespace SimpleTranslator
 
         /*
           言語の自動識別
+          <param name="domain">翻訳対象文書</param>
         */
         public string DetectMethod(string textToTransform)
         {
@@ -119,15 +124,15 @@ namespace SimpleTranslator
     */
     public class AzureAuthToken
     {
-        // トークンサービスのURL
+        // 認証サービスのURL
         private static readonly Uri ServiceUrl = new Uri("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
         // Subscription Keyを渡すときの要求ヘッダー
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
-        // トークンの有効時間：5分
+        // 認証トークンの有効時間：5分
         private static readonly TimeSpan TokenCacheDuration = new TimeSpan(0, 5, 0);
-        // 有効なトークンを格納
+        // 有効な認証トークンを格納
         private string storedTokenValue = string.Empty;
-        // 有効なトークンの取得時間
+        // 有効な認証トークンの取得時間
         private DateTime storedTokenTime = DateTime.MinValue;
 
         /*
@@ -136,12 +141,13 @@ namespace SimpleTranslator
         public string SubscriptionKey { get; private set; } = string.Empty;
 
         /*
-         トークンサービスへのリクエスト時のHTTPステータスコードの取得
+         認証サービスへのリクエスト時のHTTPステータスコードの取得
         */
         public HttpStatusCode RequestStatusCode { get; private set; }
 
         /*
-          トークンを取得するためのクライアント作成
+          認証トークンを取得するためのクライアント作成
+          <param name="key">Subscription Key</param>
         */
         public AzureAuthToken(string key)
         {
@@ -155,19 +161,19 @@ namespace SimpleTranslator
         }
 
         /*
-          Subscriptionに紐づいたトークンの取得 (非同期)
+          Subscriptionに紐づいた認証トークンの取得 (非同期)
         */
         public async Task<string> GetAccessTokenAsync()
         {
             if (SubscriptionKey == string.Empty) return string.Empty;
 
-            // トークンが有効な場合は有効なトークンを返す
+            // 認証トークンが有効な場合は有効な認証トークンを返す
             if ((DateTime.Now - storedTokenTime) < TokenCacheDuration)
             {
                 return storedTokenValue;
             }
 
-            // トークンを取得
+            // 認証トークンを取得
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
@@ -187,17 +193,17 @@ namespace SimpleTranslator
         }
 
         /*
-          Subscriptionに紐づいたトークンの取得 (同期)
+          Subscriptionに紐づいた認証トークンの取得 (同期)
         */
         public string GetAccessToken()
         {
-            // トークンが有効な場合は有効なトークンを返す
+            // 認証トークンが有効な場合は有効な認証トークンを返す
             if ((DateTime.Now - storedTokenTime) < TokenCacheDuration)
             {
                 return storedTokenValue;
             }
 
-            // トークンを取得
+            // 認証トークンを取得
             string accessToken = null;
 
             var task = Task.Run(async () =>
