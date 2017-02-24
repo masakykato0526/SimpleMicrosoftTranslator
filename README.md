@@ -1,2 +1,3 @@
 # SimpleMicrosoftTranslator
-Microsoft Translatorを使用したC#コンソールアプリケーション
+Microsoft Translatorを使用した基本的なC#コンソールアプリケーションです。
+SubscriptionKeyには、自身のキーを設定してください。
